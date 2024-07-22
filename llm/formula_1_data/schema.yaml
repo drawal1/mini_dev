@@ -1,0 +1,129 @@
+TABLES: About Formula 1 racing data
+  circuits: The racing circuit which refers to the circular track where the race is held.
+    circuitId: INTEGER
+    circuitRef: TEXT, For example 'sepang'
+    name: TEXT, For example 'Sepang International Circuit'
+    location: TEXT, For example 'Kuala Lumpur'
+    country: TEXT, For example 'Malaysia'
+    lat: REAL
+    lng: REAL
+    alt: INTEGER
+    url: TEXT, For example 'http://en.wikipedia.org/wiki/Sepang_International_Circuit'
+  constructors: The manufacturer of the car
+    constructorId: INTEGER
+    constructorRef: TEXT, For example 'mclaren'
+    name: TEXT, For example 'McLaren'
+    nationality: TEXT, For example 'British'
+    url: TEXT, For example 'http://en.wikipedia.org/wiki/McLaren'
+  drivers: The driver of the car
+    driverId: INTEGER
+    driverRef: TEXT, For example 'hamilton'
+    number: INTEGER
+    code: TEXT, For example 'HAM'
+    forename: TEXT, For example 'Lewis'
+    surname: TEXT, For example 'Hamilton'
+    dob: DATE, For example '1985-01-07'
+    nationality: TEXT, For example 'British'
+    url: TEXT, For example 'http://en.wikipedia.org/wiki/Lewis_Hamilton'
+  seasons: The year in which the race is held
+    year: INTEGER
+    url: TEXT, For example 'http://en.wikipedia.org/wiki/1950_Formula_One_season'
+  races: Details about a particular race
+    raceId: INTEGER
+    year: INTEGER
+    round: INTEGER, the number of rounds (circles around the track) in the race
+    circuitId: INTEGER
+    name: TEXT, For example 'Malaysian Grand Prix'
+    date: DATE, For example '2009-04-05'
+    time: TEXT, the time of the race, For example '09:00:00'
+    url: TEXT, For example 'http://en.wikipedia.org/wiki/2009_Malaysian_Grand_Prix'
+  constructorResults: race results for the car (manufacturer)
+    constructorResultsId: INTEGER
+    raceId: INTEGER
+    constructorId: INTEGER
+    points: REAL, the number of points earned in the race
+    status: TEXT, For example 'D' for disqualified, null otherwise
+  constructorStandings: The standing of the car manufacturer in the race
+    constructorStandingsId: INTEGER
+    raceId: INTEGER
+    constructorId: INTEGER
+    points: REAL, same as constructorResults.points
+    position: INTEGER, which position was the car manufacturer in the race
+    positionText: TEXT, For example '1'
+    wins: INTEGER, number of wins in the race
+  driverStandings:  The standing of the driver in the race
+    driverStandingsId: INTEGER
+    raceId: INTEGER
+    driverId: INTEGER
+    points: REAL
+    position: INTEGER
+    positionText: TEXT, For example '1'
+    wins: INTEGER
+  lapTimes: The time taken by the driver to complete a particular lap
+    raceId: INTEGER
+    driverId: INTEGER
+    lap: INTEGER, refers to the number of a specific go-around on the track for the race
+    position: INTEGER, the position of the driver at the end of the particular lap
+    time: TEXT, duration in hours, minutes, seconds, For example '1:52.965'. Generally used to answer questions
+    milliseconds: INTEGER, duration in milliseconds
+  pitStops: The number of times the driver stopped at the pit for a particular lap in a given race
+    raceId: INTEGER
+    driverId: INTEGER
+    stop: INTEGER
+    lap: INTEGER
+    time: TEXT, actual time when stopped, For example '16:24:40'
+    duration: TEXT, how long in seconds did the driver stop, For example '22.552'
+    milliseconds: INTEGER, stop duration in milliseconds
+  qualifying: Details from qualifying rounds for a race for each driver
+    qualifyId: INTEGER
+    raceId: INTEGER
+    driverId: INTEGER
+    constructorId: INTEGER
+    number: INTEGER, the number given to the car/driver for the race
+    position: INTEGER, the position of the driver in the qualifying round
+    q1: TEXT, lap 1 duration, For example '1:35.347'
+    q2: TEXT, lap 2 duration, For example '1:34.412'
+    q3: TEXT, lap 3 duration, For example '1:35.748'
+  status: lookup table for status of driver in a race
+    statusId: INTEGER
+    status: TEXT, For example 'Finished', 'Disqualified', 'Accident', 'Collision', 'Engine','+4 Laps', etc.
+  results: Detailed results of a race
+    resultId: INTEGER
+    raceId: INTEGER
+    driverId: INTEGER
+    constructorId: INTEGER
+    number: INTEGER, the number given to the car/driver for the race
+    grid: INTEGER, the starting position of a driver on the grid at the beginning of the race
+    position: INTEGER
+    positionText: TEXT, For example '1'
+    positionOrder: INTEGER
+    points: REAL
+    laps: INTEGER
+    time: TEXT, For example '1:31:18.555'
+    milliseconds: INTEGER
+    fastestLap: INTEGER
+    rank: INTEGER
+    fastestLapTime: TEXT, For example '1:35.405'
+    fastestLapSpeed: TEXT, For example '209.158'
+    statusId: INTEGER
+
+RELATIONSHIPS:
+    races.year = seasons.year
+    races.circuitId = circuits.circuitId
+    constructorResults.raceId = races.raceId
+    constructorResults.constructorId = constructors.constructorId
+    constructorStandings.raceId = races.raceId
+    constructorStandings.constructorId = constructors.constructorId
+    driverStandings.raceId = races.raceId
+    driverStandings.driverId = drivers.driverId
+    lapTimes.raceId = races.raceId
+    lapTimes.driverId = drivers.driver
+    pitStops.raceId = races.raceId
+    pitStops.driverId = drivers.driver
+    qualifying.raceId = races.raceId
+    qualifying.driverId = drivers.driverId
+    qualifying.constructorId = constructors.constructorId
+    results.raceId = races.raceId
+    results.driverId = drivers.driverId
+    results.constructorId = constructors.constructorId
+    results.statusId = status.statusId

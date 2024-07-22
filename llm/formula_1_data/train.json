@@ -1,0 +1,450 @@
+[
+    {
+        "question_id": 946,
+        "db_id": "formula_1",
+        "question": "Please list the location coordinates of the US circuits.",
+        "evidence": "location coordinates refers to (lat, lng); the US refers to country = 'USA';",
+        "SQL": "SELECT lat, lng FROM circuits WHERE country = 'USA'",
+        "difficulty": "simple"
+    },
+    {
+        "question_id": 863,
+        "db_id": "formula_1",
+        "question": "Show me the season page of year when the race No. 901 took place.",
+        "evidence": "race number refers to raceId;",
+        "SQL": "SELECT T2.url FROM races AS T1 INNER JOIN seasons AS T2 ON T2.year = T1.year WHERE T1.raceId = 901",
+        "difficulty": "simple"
+    },
+    {
+        "question_id": 849,
+        "db_id": "formula_1",
+        "question": "Where can the introduction of the races held on Circuit de Barcelona-Catalunya be found?",
+        "evidence": "introduction of races refers to url; Circuit de Barcelona-Catalunya is a name of circuit;",
+        "SQL": "SELECT DISTINCT T1.url FROM circuits AS T1 INNER JOIN races AS T2 ON T2.circuitID = T1.circuitId WHERE T1.name = 'Circuit de Barcelona-Catalunya'",
+        "difficulty": "simple"
+    },
+    {
+        "question_id": 957,
+        "db_id": "formula_1",
+        "question": "How many Italian drivers haven't finished the race?",
+        "evidence": "haven't finished the race refers to time is null;",
+        "SQL": "SELECT COUNT(T1.driverId) FROM results AS T1 INNER JOIN drivers AS T2 on T1.driverId = T2.driverId WHERE T2.nationality = 'Italian' AND T1.time IS NULL",
+        "difficulty": "simple"
+    },
+    {
+        "question_id": 1013,
+        "db_id": "formula_1",
+        "question": "What is the lap record for the Austrian Grand Prix Circuit?",
+        "evidence": "lap record means the fastest time recorded which refers to time",
+        "SQL": "WITH fastest_lap_times AS ( SELECT T1.raceId, T1.fastestLapTime FROM results AS T1 WHERE T1.FastestLapTime IS NOT NULL) SELECT MIN(fastest_lap_times.fastestLapTime) as lap_record FROM fastest_lap_times INNER JOIN races AS T2 on fastest_lap_times.raceId = T2.raceId INNER JOIN circuits AS T3 on T2.circuitId = T3.circuitId WHERE T2.name = 'Austrian Grand Prix'",
+        "difficulty": "simple"
+    },
+    {
+        "question_id": 874,
+        "db_id": "formula_1",
+        "question": "Who finished second in the San Marino Grand Prix in 2006?",
+        "evidence": "finished second refers to position = 2;",
+        "SQL": "SELECT T3.forename, T3.surname FROM races AS T1 INNER JOIN results AS T2 ON T2.raceId = T1.raceId INNER JOIN drivers AS T3 ON T3.driverId = T2.driverId WHERE T1.year = 2006 AND T1.name = 'San Marino Grand Prix' AND T2.position = 2",
+        "difficulty": "simple"
+    },
+    {
+        "question_id": 952,
+        "db_id": "formula_1",
+        "question": "Which constructors have been ranked 1?",
+        "evidence": "",
+        "SQL": "SELECT DISTINCT T2.name FROM results AS T1 INNER JOIN constructors AS T2 on T1.constructorId = T2.constructorId WHERE T1.rank = 1",
+        "difficulty": "simple"
+    },
+    {
+        "question_id": 961,
+        "db_id": "formula_1",
+        "question": "Which race has the shortest actual finishing time? Please give the name and year.",
+        "evidence": "shortest actual finishing time refers to Min(milliseconds) except milliseconds = null;",
+        "SQL": "SELECT T1.name, T1.year FROM races AS T1 INNER JOIN results AS T2 on T1.raceId = T2.raceId WHERE T2.milliseconds IS NOT NULL ORDER BY T2.milliseconds LIMIT 1",
+        "difficulty": "simple"
+    },
+    {
+        "question_id": 991,
+        "db_id": "formula_1",
+        "question": "What is the full name and date of birth of Austrian drivers born between 1981 and 1991?",
+        "evidence": "Full name refers to forname, surname; Date of birth refers to dob; year(dob) BETWEEN '1981' AND '1991'; Austrian is a nationality",
+        "SQL": "SELECT forename, surname, dob FROM drivers WHERE nationality = 'Austrian' AND STRFTIME('%Y', dob) BETWEEN '1981' AND '1991'",
+        "difficulty": "simple"
+    },
+    {
+        "question_id": 891,
+        "db_id": "formula_1",
+        "question": "Name all drivers in the 2010 Singapore Grand Prix order by their position stands.",
+        "evidence": "",
+        "SQL": "SELECT T3.forename, T3.surname FROM races AS T1 INNER JOIN driverStandings AS T2 ON T2.raceId = T1.raceId INNER JOIN drivers AS T3 ON T3.driverId = T2.driverId WHERE T1.name = 'Singapore Grand Prix' AND T1.year = 2010 ORDER BY T2.position ASC",
+        "difficulty": "simple"
+    },
+    {
+        "question_id": 987,
+        "db_id": "formula_1",
+        "question": "What is the average fastest lap time of the top 10 drivers in the 2006 United States Grand Prix?",
+        "evidence": "top 10 refers to rank <11; AVG(fastestLapTime);",
+        "SQL": "SELECT AVG(T1.fastestLapTime) FROM results AS T1 INNER JOIN races AS T2 on T1.raceId = T2.raceId WHERE T1.rank < 11 AND T2.year = 2006 AND T2.name = 'United States Grand Prix'",
+        "difficulty": "simple"
+    },
+    {
+        "question_id": 1019,
+        "db_id": "formula_1",
+        "question": "What is the average lap time in milliseconds of all the lap records set on the various circuits in Italy?",
+        "evidence": "average = AVG(milliseconds)",
+        "SQL": "SELECT CAST(SUM(T1.milliseconds) AS REAL) / COUNT(T1.lap) FROM lapTimes AS T1 INNER JOIN races AS T2 on T1.raceId = T2.raceId INNER JOIN circuits AS T3 on T2.circuitId = T3.circuitId WHERE T3.country = 'Italy'",
+        "difficulty": "moderate"
+    },
+    {
+        "question_id": 903,
+        "db_id": "formula_1",
+        "question": "How many times did Michael Schumacher won from races hosted in Sepang International Circuit?",
+        "evidence": "win from races refers to max(points)",
+        "SQL": "SELECT SUM(T2.wins) FROM drivers AS T1 INNER JOIN driverStandings AS T2 ON T2.driverId = T1.driverId INNER JOIN races AS T3 ON T3.raceId = T2.raceId INNER JOIN circuits AS T4 ON T4.circuitId = T3.circuitId WHERE T1.forename = 'Michael' AND T1.surname = 'Schumacher' AND T4.name = 'Sepang International Circuit'",
+        "difficulty": "moderate"
+    },
+    {
+        "question_id": 907,
+        "db_id": "formula_1",
+        "question": "List all races in 2017 and the hosting country order by date of the event.",
+        "evidence": "",
+        "SQL": "SELECT DISTINCT T2.name, T1.country FROM circuits AS T1 INNER JOIN races AS T2 ON T2.circuitID = T1.circuitId WHERE T2.year = 2017 ORDER BY T2.date ASC",
+        "difficulty": "simple"
+    },
+    {
+        "question_id": 965,
+        "db_id": "formula_1",
+        "question": "List out the Id number of races which were hold in 2009.",
+        "evidence": "",
+        "SQL": "SELECT raceId FROM races WHERE year = 2009",
+        "difficulty": "simple"
+    },
+    {
+        "question_id": 923,
+        "db_id": "formula_1",
+        "question": "How many Formula_1 races took place on the circuits in Italy?",
+        "evidence": "",
+        "SQL": "SELECT COUNT(T2.circuitId) FROM circuits AS T1 INNER JOIN races AS T2 ON T2.circuitID = T1.circuitId WHERE T1.country = 'Italy'",
+        "difficulty": "simple"
+    },
+    {
+        "question_id": 947,
+        "db_id": "formula_1",
+        "question": "How many British drivers were born after 1980?",
+        "evidence": "born after 1980 refers to year (dob) >1980;",
+        "SQL": "SELECT COUNT(driverId) FROM drivers WHERE nationality = 'British' AND STRFTIME('%Y', dob) > '1980'",
+        "difficulty": "simple"
+    },
+    {
+        "question_id": 985,
+        "db_id": "formula_1",
+        "question": "Among the drivers who participated in the French Grand Prix, who has the slowest time in the 3rd lap.",
+        "evidence": "slowest time refers to Max(time);",
+        "SQL": "SELECT T1.driverId FROM lapTimes AS T1 INNER JOIN races AS T2 on T1.raceId = T2.raceId WHERE T2.name = 'French Grand Prix' AND T1.lap = 3 ORDER BY T1.time DESC LIMIT 1",
+        "difficulty": "simple"
+    },
+    {
+        "question_id": 983,
+        "db_id": "formula_1",
+        "question": "Which of the Italian constructor got the highest point to date? Give its introduction website?",
+        "evidence": "introduction website refers to url; Italian is a nationality",
+        "SQL": "SELECT T1.url FROM constructors AS T1 INNER JOIN constructorStandings AS T2 on T1.constructorId = T2.constructorId WHERE T1.nationality = 'Italian' ORDER BY T2.points DESC LIMIT 1",
+        "difficulty": "simple"
+    },
+    {
+        "question_id": 932,
+        "db_id": "formula_1",
+        "question": "In which years did Lewis Hamilton participate in a Formula_1 race?",
+        "evidence": "",
+        "SQL": "SELECT DISTINCT T1.year FROM races AS T1 INNER JOIN results AS T2 ON T2.raceId = T1.raceId INNER JOIN drivers AS T3 ON T3.driverId = T2.driverId WHERE T3.forename = 'Lewis' AND T3.surname = 'Hamilton'",
+        "difficulty": "simple"
+    },
+    {
+        "question_id": 926,
+        "db_id": "formula_1",
+        "question": "What's the fastest lap time ever in a race for Lewis Hamilton?",
+        "evidence": "fastest lap time ever refers to min(fastestLapTime)",
+        "SQL": "SELECT T2.fastestLapTime FROM drivers AS T1 INNER JOIN results AS T2 ON T2.driverId = T1.driverId WHERE T1.forename = 'Lewis' AND T1.surname = 'Hamilton' AND T2.fastestLapTime IS NOT NULL ORDER BY T2.fastestLapTime ASC LIMIT 1",
+        "difficulty": "simple"
+    },
+    {
+        "question_id": 953,
+        "db_id": "formula_1",
+        "question": "How many French constructors have a lap number of over 50?",
+        "evidence": "lap numbers of over 50 refers to laps > 50;",
+        "SQL": "SELECT COUNT(DISTINCT T2.constructorId) FROM results AS T1 INNER JOIN constructors AS T2 on T1.constructorId = T2.constructorId WHERE T1.laps > 50 AND T2.nationality = 'French'",
+        "difficulty": "simple"
+    },
+    {
+        "question_id": 968,
+        "db_id": "formula_1",
+        "question": "What is reference name of Robert Kubica?",
+        "evidence": "reference name refers to driverRef;",
+        "SQL": "SELECT driverRef FROM drivers WHERE forename = 'Robert' AND surname = 'Kubica'",
+        "difficulty": "simple"
+    },
+    {
+        "question_id": 921,
+        "db_id": "formula_1",
+        "question": "Please give more information about the Formula_1 races that used the Silverstone Circuit.",
+        "evidence": "more information refers to url",
+        "SQL": "SELECT DISTINCT T1.url FROM circuits AS T1 INNER JOIN races AS T2 ON T2.circuitID = T1.circuitId WHERE T1.name = 'Silverstone Circuit'",
+        "difficulty": "simple"
+    },
+    {
+        "question_id": 974,
+        "db_id": "formula_1",
+        "question": "State the racing year which has the fastest lap time?",
+        "evidence": "'has the fastest lap time?' refers to fastestLapTime has values",
+        "SQL": "SELECT T2.year FROM results AS T1 INNER JOIN races AS T2 on T1.raceId = T2.raceId WHERE T1.fastestLapTime IS NOT NULL",
+        "difficulty": "simple"
+    },
+    {
+        "question_id": 982,
+        "db_id": "formula_1",
+        "question": "How many American drivers have puncture status.",
+        "evidence": "puncture status refers to status = Puncture;",
+        "SQL": "SELECT COUNT(T1.driverId) FROM drivers AS T1 INNER JOIN results AS T2 on T1.driverId = T2.driverId INNER JOIN status AS T3 on T2.statusId = T3.statusId WHERE T3.status = 'Puncture' AND T1.nationality = 'American'",
+        "difficulty": "simple"
+    },
+    {
+        "question_id": 949,
+        "db_id": "formula_1",
+        "question": "Which constructor has the highest point?",
+        "evidence": "",
+        "SQL": "SELECT T2.name FROM constructorStandings AS T1 INNER JOIN constructors AS T2 on T1.constructorId = T2.constructorId ORDER BY T1.points DESC LIMIT 1",
+        "difficulty": "simple"
+    },
+    {
+        "question_id": 860,
+        "db_id": "formula_1",
+        "question": "For the driver who had the Q2 time as 0:01:40 in the qualifying race No. 355, what is his nationality?",
+        "evidence": "race number refers to raceId;",
+        "SQL": "SELECT DISTINCT T2.nationality FROM qualifying AS T1 INNER JOIN drivers AS T2 ON T2.driverId = T1.driverId WHERE T1.raceId = 355 AND T1.q2 LIKE '1:40%'",
+        "difficulty": "simple"
+    },
+    {
+        "question_id": 886,
+        "db_id": "formula_1",
+        "question": "Which year has the most number of races?",
+        "evidence": "the most number of races refers to max(round);",
+        "SQL": "SELECT year FROM races GROUP BY year ORDER BY COUNT(round) DESC LIMIT 1",
+        "difficulty": "simple"
+    },
+    {
+        "question_id": 916,
+        "db_id": "formula_1",
+        "question": "Please list the surnames of all the Italian drivers.",
+        "evidence": "Italian refers to nationality = 'italian'",
+        "SQL": "SELECT surname FROM drivers WHERE nationality = 'Italian'",
+        "difficulty": "simple"
+    },
+    {
+        "question_id": 958,
+        "db_id": "formula_1",
+        "question": "Which driver has the fastest lap time? Please give their forenames and surnames.",
+        "evidence": "",
+        "SQL": "SELECT T2.forename, T2.surname, T1.fastestLapTime FROM results AS T1 INNER JOIN drivers AS T2 on T1.driverId = T2.driverId WHERE T1.fastestLapTime IS NOT NULL ORDER BY T1.fastestLapTime ASC LIMIT 1",
+        "difficulty": "moderate"
+    },
+    {
+        "question_id": 908,
+        "db_id": "formula_1",
+        "question": "What is the most laps f1 races had? Name the race, year and circuit location where the races with most laps was hosted.",
+        "evidence": "",
+        "SQL": "SELECT T3.lap, T2.name, T2.year, T1.location FROM circuits AS T1 INNER JOIN races AS T2 ON T1.circuitId = T2.circuitId INNER JOIN lapTimes AS T3 ON T3.raceId = T2.raceId ORDER BY T3.lap DESC LIMIT 1",
+        "difficulty": "simple"
+    },
+    {
+        "question_id": 864,
+        "db_id": "formula_1",
+        "question": "For the race happened on 2015/11/29, how many drivers finished the game?",
+        "evidence": "game and race are synonyms; drivers who finished the race should have record in time;",
+        "SQL": "SELECT COUNT(T2.driverId) FROM races AS T1 INNER JOIN results AS T2 ON T2.raceId = T1.raceId WHERE T1.date = '2015-11-29' AND T2.time IS NOT NULL",
+        "difficulty": "simple"
+    },
+    {
+        "question_id": 941,
+        "db_id": "formula_1",
+        "question": "How many points did Lewis Hamilton get in total in all the Formula_1 races he participated?",
+        "evidence": "",
+        "SQL": "SELECT SUM(T2.points) FROM drivers AS T1 INNER JOIN results AS T2 ON T1.driverId = T2.driverId WHERE T1.forename = 'Lewis' AND T1.surname = 'Hamilton'",
+        "difficulty": "simple"
+    },
+    {
+        "question_id": 939,
+        "db_id": "formula_1",
+        "question": "How many drivers from the UN participated in the 2008 Australian Grand Prix?",
+        "evidence": "from the UN refers to nationality = 'British'",
+        "SQL": "SELECT COUNT(*) FROM drivers AS T1 INNER JOIN results AS T2 ON T1.driverId = T2.driverId INNER JOIN races AS T3 ON T3.raceId = T2.raceId WHERE T3.name = 'Australian Grand Prix' AND T1.nationality = 'British' AND T3.year = 2008",
+        "difficulty": "moderate"
+    },
+    {
+        "question_id": 1010,
+        "db_id": "formula_1",
+        "question": "What is the lap record set by Lewis Hamilton in a Formula_1 race?",
+        "evidence": "lap recod means the fastest time recorded which refers to time",
+        "SQL": "SELECT T1.time FROM lapTimes AS T1 INNER JOIN drivers AS T2 on T1.driverId = T2.driverId WHERE T2.forename = 'Lewis' AND T2.surname = 'Hamilton'",
+        "difficulty": "simple"
+    },
+    {
+        "question_id": 935,
+        "db_id": "formula_1",
+        "question": "How many drivers managed to finish the race in the 2008 Australian Grand Prix?",
+        "evidence": "managed to finish the race refers to time is not null",
+        "SQL": "SELECT COUNT(T2.driverId) FROM races AS T1 INNER JOIN results AS T2 ON T2.raceId = T1.raceId WHERE T1.name = 'Australian Grand Prix' AND T1.year = 2008 AND T2.time IS NOT NULL",
+        "difficulty": "simple"
+    },
+    {
+        "question_id": 856,
+        "db_id": "formula_1",
+        "question": "Please list the time of the races held on Sepang International Circuit.",
+        "evidence": "",
+        "SQL": "SELECT DISTINCT T2.time FROM circuits AS T1 INNER JOIN races AS T2 ON T2.circuitID = T1.circuitId WHERE T1.name = 'Sepang International Circuit'",
+        "difficulty": "simple"
+    },
+    {
+        "question_id": 920,
+        "db_id": "formula_1",
+        "question": "Please list all the years that Silverstone Circuit was used in a Formula_1 race.",
+        "evidence": "",
+        "SQL": "SELECT DISTINCT T2.year FROM circuits AS T1 INNER JOIN races AS T2 ON T2.circuitID = T1.circuitId WHERE T1.name = 'Silverstone Circuit'",
+        "difficulty": "simple"
+    },
+    {
+        "question_id": 943,
+        "db_id": "formula_1",
+        "question": "What is the rate of drivers completing all the laps in the 2008 Australian Grand Prix?",
+        "evidence": "completing all the laps refers to time is not null; rate = divide(COUNT(raceID where time is not null), COUNT(raceID))",
+        "SQL": "SELECT CAST(SUM(IIF(T1.time IS NOT NULL, 1, 0)) AS REAL) * 100 / COUNT(T1.resultId) FROM results AS T1 INNER JOIN races AS T2 ON T1.raceId = T2.raceId WHERE T2.name = 'Australian Grand Prix' AND T2.year = 2008",
+        "difficulty": "moderate"
+    },
+    {
+        "question_id": 929,
+        "db_id": "formula_1",
+        "question": "Please list the Formula_1 races that Lewis Hamilton participated.",
+        "evidence": "",
+        "SQL": "SELECT T1.name FROM races AS T1 INNER JOIN results AS T2 ON T2.raceId = T1.raceId INNER JOIN drivers AS T3 ON T3.driverId = T2.driverId WHERE T3.forename = 'Lewis' AND T3.surname = 'Hamilton'",
+        "difficulty": "simple"
+    },
+    {
+        "question_id": 1018,
+        "db_id": "formula_1",
+        "question": "What was the average time in milliseconds Lewis Hamilton spent at a pit stop during Formula_1 races?",
+        "evidence": "average time in milliseconds spent at pit stop refers to AVG(milliseconds)",
+        "SQL": "SELECT AVG(milliseconds) FROM pitStops AS T1 INNER JOIN drivers AS T2 on T1.driverId = T2.driverId WHERE T2.forename = 'Lewis' AND T2.surname = 'Hamilton'",
+        "difficulty": "simple"
+    },
+    {
+        "question_id": 980,
+        "db_id": "formula_1",
+        "question": "List the reference name of the drivers who passed the second qualifying lap during race no. 23. Indicate their nationality and birthday.",
+        "evidence": "passed the second qualifying lap refers to q2 is not null; birthday refers to dob; reference name of drivers refers to driverRef; race no. refers to raceId;",
+        "SQL": "SELECT T2.driverRef, T2.nationality, T2.dob FROM qualifying AS T1 INNER JOIN drivers AS T2 on T1.driverId = T2.driverId WHERE T1.raceId = 23 AND T1.q2 IS NOT NULL",
+        "difficulty": "moderate"
+    },
+    {
+        "question_id": 998,
+        "db_id": "formula_1",
+        "question": "In terms of number of points acquired, how many victories did the driver who ranked 91st acquired?",
+        "evidence": "victories refer to wins; 91st refers to points\n\n",
+        "SQL": "SELECT SUM(CASE WHEN points = 91 THEN wins ELSE 0 END) FROM driverStandings",
+        "difficulty": "simple"
+    },
+    {
+        "question_id": 1007,
+        "db_id": "formula_1",
+        "question": "What was the longest time that Lewis Hamilton had spent at a pit stop?",
+        "evidence": "longest time refes to MAX(duration);",
+        "SQL": "SELECT T1.duration FROM pitStops AS T1 INNER JOIN drivers AS T2 on T1.driverId = T2.driverId WHERE T2.forename = 'Lewis' AND T2.surname = 'Hamilton' ORDER BY T1.duration DESC LIMIT 1",
+        "difficulty": "simple"
+    },
+    {
+        "question_id": 914,
+        "db_id": "formula_1",
+        "question": "How many drivers don't have a code?",
+        "evidence": "don't have a code refers to code is null",
+        "SQL": "SELECT COUNT(driverId) - COUNT(CASE WHEN code IS NOT NULL THEN code END) FROM drivers",
+        "difficulty": "simple"
+    },
+    {
+        "question_id": 888,
+        "db_id": "formula_1",
+        "question": "In which country was the first European Grand Prix hosted? Name the circuit and location.",
+        "evidence": "the first refers to min(year);",
+        "SQL": "SELECT T1.country, T1.location FROM circuits AS T1 INNER JOIN races AS T2 ON T2.circuitID = T1.circuitId WHERE T2.name = 'European Grand Prix' ORDER BY T2.year ASC LIMIT 1",
+        "difficulty": "simple"
+    },
+    {
+        "question_id": 918,
+        "db_id": "formula_1",
+        "question": "What's Lewis Hamilton's reference name?",
+        "evidence": "reference name refers to driverRef",
+        "SQL": "SELECT driverRef FROM drivers WHERE forename = 'Lewis' AND surname = 'Hamilton'",
+        "difficulty": "simple"
+    },
+    {
+        "question_id": 919,
+        "db_id": "formula_1",
+        "question": "Which circuit did the 2009 Spanish Grand Prix use?",
+        "evidence": "",
+        "SQL": "SELECT T1.name FROM circuits AS T1 INNER JOIN races AS T2 ON T2.circuitID = T1.circuitId WHERE T2.year = 2009 AND T2.name = 'Spanish Grand Prix'",
+        "difficulty": "simple"
+    },
+    {
+        "question_id": 882,
+        "db_id": "formula_1",
+        "question": "Which year was the first Singapore Grand Prix?",
+        "evidence": "the first race refers to race happened in min(year);",
+        "SQL": "SELECT year FROM races WHERE name = 'Singapore Grand Prix' ORDER BY year ASC LIMIT 1",
+        "difficulty": "simple"
+    },
+    {
+        "question_id": 986,
+        "db_id": "formula_1",
+        "question": "In which race did the fastest 1st lap time was recorded? Please indicate the time in milliseconds.",
+        "evidence": "fastest refers to Min(time);",
+        "SQL": "SELECT T1.milliseconds FROM lapTimes AS T1 INNER JOIN races AS T2 on T1.raceId = T2.raceId WHERE T1.lap = 1 ORDER BY T1.time LIMIT 1",
+        "difficulty": "simple"
+    },
+    {
+        "question_id": 855,
+        "db_id": "formula_1",
+        "question": "Where can I find the information about the races held on Sepang International Circuit?",
+        "evidence": "information about races refers to url;",
+        "SQL": "SELECT DISTINCT T1.url FROM circuits AS T1 INNER JOIN races AS T2 ON T2.circuitID = T1.circuitId WHERE T1.name = 'Sepang International Circuit'",
+        "difficulty": "simple"
+    },
+    {
+        "question_id": 889,
+        "db_id": "formula_1",
+        "question": "When was the last f1 season whereby Brands Hatch hosted the British Grand Prix?",
+        "evidence": "the last refers to max(year);",
+        "SQL": "SELECT T2.date FROM circuits AS T1 INNER JOIN races AS T2 ON T2.circuitID = T1.circuitId WHERE T1.name = 'Brands Hatch' AND T2.name = 'British Grand Prix' ORDER BY T2.year DESC LIMIT 1",
+        "difficulty": "simple"
+    },
+    {
+        "question_id": 858,
+        "db_id": "formula_1",
+        "question": "Which country is the constructor which got 1 point in the race No. 24 from?",
+        "evidence": "race number refers to raceId;",
+        "SQL": "SELECT T2.nationality FROM constructorResults AS T1 INNER JOIN constructors AS T2 ON T2.constructorId = T1.constructorId WHERE T1.raceId = 24 AND T1.points = 1",
+        "difficulty": "simple"
+    },
+    {
+        "question_id": 1016,
+        "db_id": "formula_1",
+        "question": "In the race a driver set the lap record for the Austrian Grand Prix Circuit, how long did he spent at the pit stop at that same race?",
+        "evidence": "lap record means the fastest time recorded which refers to time, how long spent at pitstop refers to duration",
+        "SQL": "WITH fastest_lap_times AS ( SELECT T1.raceId, T1.driverId, T1.FastestLapTime, (CAST(SUBSTR(T1.FastestLapTime, 1, INSTR(T1.FastestLapTime, ':') - 1) AS REAL) * 60) + (CAST(SUBSTR(T1.FastestLapTime, INSTR(T1.FastestLapTime, ':') + 1, INSTR(T1.FastestLapTime, '.') - INSTR(T1.FastestLapTime, ':') - 1) AS REAL)) + (CAST(SUBSTR(T1.FastestLapTime, INSTR(T1.FastestLapTime, '.') + 1) AS REAL) / 1000) as time_in_seconds FROM results AS T1 WHERE T1.FastestLapTime IS NOT NULL), lap_record_race AS ( SELECT T1.raceId, T1.driverId FROM results AS T1 INNER JOIN races AS T2 on T1.raceId = T2.raceId INNER JOIN circuits AS T3 on T2.circuitId = T3.circuitId INNER JOIN ( SELECT MIN(fastest_lap_times.time_in_seconds) as min_time_in_seconds FROM fastest_lap_times INNER JOIN races AS T2 on fastest_lap_times.raceId = T2.raceId INNER JOIN circuits AS T3 on T2.circuitId = T3.circuitId WHERE T2.name = 'Austrian Grand Prix') AS T4 ON (CAST(SUBSTR(T1.FastestLapTime, 1, INSTR(T1.FastestLapTime, ':') - 1) AS REAL) * 60) + (CAST(SUBSTR(T1.FastestLapTime, INSTR(T1.FastestLapTime, ':') + 1, INSTR(T1.FastestLapTime, '.') - INSTR(T1.FastestLapTime, ':') - 1) AS REAL)) + (CAST(SUBSTR(T1.FastestLapTime, INSTR(T1.FastestLapTime, '.') + 1) AS REAL) / 1000) = T4.min_time_in_seconds WHERE T2.name = 'Austrian Grand Prix') SELECT T4.duration FROM lap_record_race INNER JOIN pitStops AS T4 on lap_record_race.raceId = T4.raceId AND lap_record_race.driverId = T4.driverId",
+        "difficulty": "challenging"
+    },
+    {
+        "question_id": 1006,
+        "db_id": "formula_1",
+        "question": "Among all the lap records set on various circuits, what is the time for the fastest one?",
+        "evidence": "",
+        "SQL": "SELECT time FROM lapTimes ORDER BY (CASE WHEN INSTR(time, ':') <> INSTR(SUBSTR(time, INSTR(time, ':') + 1), ':') + INSTR(time, ':') THEN CAST(SUBSTR(time, 1, INSTR(time, ':') - 1) AS REAL) * 3600 ELSE 0 END) + (CAST(SUBSTR(time, INSTR(time, ':') - 2 * (INSTR(time, ':') = INSTR(SUBSTR(time, INSTR(time, ':') + 1), ':') + INSTR(time, ':')), INSTR(time, ':') - 1) AS REAL) * 60) + (CAST(SUBSTR(time, INSTR(time, ':') + 1, INSTR(time, '.') - INSTR(time, ':') - 1) AS REAL)) + (CAST(SUBSTR(time, INSTR(time, '.') + 1) AS REAL) / 1000) ASC LIMIT 1",
+        "difficulty": "challenging"
+    }
+]

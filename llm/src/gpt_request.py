@@ -2,7 +2,7 @@
 import argparse
 import json
 import os
-from openai import AzureOpenAI
+from openai import OpenAI
 from tqdm import tqdm
 import time
 from concurrent.futures import ThreadPoolExecutor
@@ -12,8 +12,8 @@ from prompt import generate_combined_prompts_one
 
 
 """openai configure"""
-api_version = "2024-02-01"
-api_base = "https://gcrendpoint.azurewebsites.net"
+# api_version = "2024-02-01"
+# api_base = "https://gcrendpoint.azurewebsites.net"
 
 
 def new_directory(path):
@@ -30,7 +30,7 @@ def connect_gpt(engine, prompt, max_tokens, temperature, stop, client):
         time.sleep(2)
         try:
 
-            if engine == "gpt-35-turbo-instruct":
+            if engine == "gpt-3.5-turbo-instruct":
                 result = client.completions.create(
                     model="gpt-3.5-turbo-instruct",
                     prompt=prompt,
@@ -92,11 +92,12 @@ def init_client(api_key, api_version, engine):
     """
     Initialize the AzureOpenAI client for a worker.
     """
-    return AzureOpenAI(
-        api_key=api_key,
-        api_version=api_version,
-        base_url=f"{api_base}/openai/deployments/{engine}",
-    )
+    return OpenAI(api_key=api_key)
+    # return AzureOpenAI(
+    #     api_key=api_key,
+    #     api_version=api_version,
+    #     base_url=f"{api_base}/openai/deployments/{engine}",
+    # )
 
 
 def post_process_response(response, db_path):
@@ -130,7 +131,7 @@ def collect_response_from_gpt(
     """
     Collect responses from GPT using multiple threads.
     """
-    client = init_client(api_key, api_version, engine)
+    client = init_client(api_key, None, engine)
 
     tasks = [
         (

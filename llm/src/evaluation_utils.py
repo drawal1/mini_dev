@@ -1,6 +1,5 @@
 import json
 import psycopg2
-import pymysql
 import sqlite3
 
 
@@ -45,6 +44,24 @@ def connect_db(sql_dialect, db_path):
     return conn
 
 
+def exec_sql(sql, db_path, sql_dialect):
+    # Connect to the database
+    conn = connect_db(sql_dialect, db_path)
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute(sql)
+        res = cursor.fetchall()
+        error_str = ''
+    except Exception as ex:
+        res = []
+        error_str = str(ex)
+    finally:
+        conn.close()
+
+    return res, error_str
+
+
 def execute_sql(predicted_sql, ground_truth, db_path, sql_dialect, calculate_func):
     conn = connect_db(sql_dialect, db_path)
     # Connect to the database
@@ -87,7 +104,7 @@ def package_sqls(
             db_path_list.append(db_root_path + db_name + "/" + db_name + ".sqlite")
 
     elif mode == "gt":
-        sqls = open(sql_path + data_mode + "_" + sql_dialect + "_gold.sql")
+        sqls = open(sql_path + "dev.sql")
         sql_txt = sqls.readlines()
         # sql_txt = [sql.split('\t')[0] for sql in sql_txt]
         for idx, sql_str in enumerate(sql_txt):

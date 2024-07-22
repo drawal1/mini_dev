@@ -1,0 +1,49 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python Debugger: DSPy ZeroShot Eval",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "args": [
+                "--db_root_path", "./formula_1_data/",
+                "--data_mode", "mini_dev",
+                "--diff_json_path", "./formula_1_data/dev.json",
+                "--predicted_sql_path", "./exp_result/formula_1_dspy_zeroshot/",
+                "--ground_truth_path", "./formula_1_data/",
+                "--num_cpus", "16",
+                "--meta_time_out", "30.0",
+                "--mode_gt", "gt",
+                "--mode_predict", "gpt",
+                "--engine", "gpt-3.5-turbo",
+                "--sql_dialect", "SQLite"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false
+        },
+        {
+            "name": "Python Debugger: Formula 1 Baseline RunGPT",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "args": [
+                "--db_root_path", "./formula_1_data/",
+                "--api_key", "<OPENAI_API_KEY>",
+                "--mode", "mini_dev",
+                "--engine", "gpt-3.5-turbo",
+                "--eval_path", "./formula_1_data/dev.json",
+                "--data_output_path", "./exp_result/formula_1_baseline/",
+                "--use_knowledge", "True",
+                "--chain_of_thought", "True",
+                "--num_process", "3",
+                "--sql_dialect", "SQLite"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false
+        },
+    ]
+}

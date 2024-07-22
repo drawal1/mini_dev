@@ -1,0 +1,9 @@
+__pycache__
+Results/Experiment*
+llm/dev_data
+llm/minidev
+llm/__pycache__
+llm/dspy_models/*
+llm/exp_result/*
+llm/openai_api_key.env
+llm/error_log.txt

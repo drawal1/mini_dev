@@ -1,5 +1,5 @@
 import sqlite3
-import pymysql
+# import pymysql
 import psycopg2
 
 db_table_map = {
@@ -126,7 +126,7 @@ def generate_schema_prompt_sqlite(db_path, num_rows=None):
     tables = cursor.fetchall()
     schemas = {}
     for table in tables:
-        if table == "sqlite_sequence":
+        if table[0] == "sqlite_sequence":
             continue
         cursor.execute(
             "SELECT sql FROM sqlite_master WHERE type='table' AND name='{}';".format(
@@ -148,6 +148,7 @@ def generate_schema_prompt_sqlite(db_path, num_rows=None):
                 num_rows, cur_table, num_rows, rows_prompt
             )
             schemas[table[0]] = "{} \n {}".format(create_prompt, verbose_prompt)
+    conn.close()
 
     for k, v in schemas.items():
         full_schema_prompt_list.append(v)
@@ -266,3 +267,16 @@ def generate_schema_prompt(sql_dialect, db_path=None, num_rows=None):
         return generate_schema_prompt_postgresql(db_path)
     else:
         raise ValueError("Unsupported SQL dialect: {}".format(sql_dialect))
+
+
+if __name__ == "__main__":
+    sql_dialect='SQLite'
+    db_id="formula_1"
+    db_root_path=f"{db_id}_data/"
+    db_path = db_root_path + db_id + "/" + db_id + ".sqlite"
+    schema_prompt = generate_schema_prompt(sql_dialect, db_path, num_rows=1)
+
+    # dump the schema into a file
+    output_path = f"{db_id}_data/schema.txt"
+    with open(output_path, "w", encoding="UTF8") as f:
+        f.write(schema_prompt)

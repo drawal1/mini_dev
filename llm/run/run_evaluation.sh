@@ -1,21 +1,25 @@
-db_root_path='./data/dev_databases/'
+db_root_path='./formula_1_data/'
 data_mode='mini_dev' # dev, train, mini_dev
-diff_json_path='./data/mini_dev_sqlite.json' # _sqlite.json, _mysql.json, _postgresql.json
+diff_json_path='./formula_1_data/dev.json' # _sqlite.json, _mysql.json, _postgresql.json
 # Path where the predicted SQL queries are stored
-predicted_sql_path='./exp_result/turbo_output_kg/'
+# predicted_sql_path='./exp_result/formula_1_baseline/'
+predicted_sql_path='./exp_result/formula_1_dspy_zeroshot/'
+# predicted_sql_path='./exp_result/formula_1_dspy_bootstrapfewshotwithrandomsearch/'
+# predicted_sql_path='./exp_result/formula_1_dspy_mixtureofexperts/'
+# predicted_sql_path='./exp_result/formula_1_dspy_miprov2/'
 
-ground_truth_path='./data/'
+ground_truth_path='./formula_1_data/'
 num_cpus=16
 meta_time_out=30.0
 mode_gt='gt'
 mode_predict='gpt'
 
 # Choose the engine to run, e.g. gpt-4, gpt-4-32k, gpt-4-turbo, gpt-35-turbo, GPT35-turbo-instruct
-engine='gpt-4-turbo'
+engine='gpt-3.5-turbo'
 
 
 # Choose the SQL dialect to run, e.g. SQLite, MySQL, PostgreSQL
-# PLEASE NOTE: You have to setup the database information in evaluation_utils.py 
+# PLEASE NOTE: You have to setup the database information in evaluation_utils.py
 # if you want to run the evaluation script using MySQL or PostgreSQL
 sql_dialect='SQLite'
 
